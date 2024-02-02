@@ -49,10 +49,11 @@ typedef struct {
 child ** array_of_death;
 int total;
 int pos;
+int global_secs;
 
+int *set_sleep_duration(int *seconds, struct, struct svc_req *rqstp);
 void parent_code(msg* parent_message, int N, child* children[]);
 void child_code(msg* child_message, child* self);
-char* last_token(const char* str, const char* delimiters);
 int random_int(int a, int b);
 
 void childSigHandler(int sig);
@@ -62,8 +63,9 @@ void parentSigHandler(int sig);
 
 int main (int argc, char *argv[]){
     // terminal arguments
-    char* file_name = argv[1];
-    int N = atoi(argv[2]);
+    //char* file_name = argv[1];
+    //int N = atoi(argv[2]);
+    int N = 10;
 
     // other important stuff
     int pid;
@@ -80,7 +82,7 @@ int main (int argc, char *argv[]){
 
     // create children and pipes
     for (int i=0; i<N; i++){
-        v_children[i] = (child*)malloc(sizeof(child));
+        v_children[i] = (child*)malloc(sizeof(child)); // look up execv // besser als diese loesung
         // send to child
         if (pipe(v_children[i]->p2c)<0) exit(PIPE_ERROR);
         // receive from child
@@ -131,9 +133,20 @@ int main (int argc, char *argv[]){
     }
 }
 
+/*
+    1. parent is already running on a server
+    2. parent receives an rpc (call an existing func?)
+    3. parent receives the number of seconds to sleep
+    4. parent forwards this to the children
+    5. children sleep
+    6. parent receives feedback and returns it to RPCer
+    7. it's prob good to use some list or array ose dicka tjeter per te mbajtur punet e prinderit
+*/
+
+
 
 void parent_code(msg* parent_message, int N, child* children[]){
-    signal(SIGINT, (void (*)(int))parentSigHandler);
+    signal(SIGINT, (void(*)(int))parentSigHandler);
     int pid = getpid();
     
     fd_set current_sockets, ready_sockets;
@@ -164,7 +177,7 @@ void parent_code(msg* parent_message, int N, child* children[]){
         ready_sockets = current_sockets;
 
         if(select(maxfd+1, &ready_sockets, NULL, NULL, NULL)<0){
-            // error happens here
+            // error happens here // who cares abt timeout
             exit(SELECT_ERROR);
         }
         for (int i=0; i<N; i++){
@@ -211,39 +224,8 @@ void child_code(msg* child_message, child* self){
 
 
 // extra functions
-char* last_token(const char* str, const char* delimiters){
-    
-    // totally made this myself
-
-    char* strCopy = strdup(str);  // Make a copy of the input string
-    if (strCopy == NULL) {
-        perror("String copy failed");
-        exit(EXIT_FAILURE);
-    }
-
-    char* lastToken = NULL;
-    char* token = strtok(strCopy, delimiters);
-
-    while (token != NULL) {
-        lastToken = token;
-        token = strtok(NULL, delimiters);
-    }
-
-    free(strCopy);  // Free the allocated memory for the string copy
-
-    // If lastToken is still NULL, there were no tokens
-    // or the input string was empty
-    if (lastToken == NULL) {
-        return NULL;
-    }
-
-    // Allocate memory for the last token and copy it
-    char* result = (char*)malloc(strlen(lastToken) + 1);
-    if (result != NULL) {
-        strcpy(result, lastToken);
-    }
-
-    return result;
+int *set_sleep_duration(int *seconds, struct, struct svc_req *rqstp){
+    global_secs = *seconds;
 }
 int random_int(int a, int b) {
     // Seed the random number generator with the current time
@@ -258,6 +240,10 @@ void childSigHandler(int signal){
     printf("Father, why hast thou forsaken me?\n");
     close(array_of_death[pos]->c2p[1]);
     close(array_of_death[pos]->p2c[0]);
+    // child must free the array_of_death too?
+    // pastro GJITHCKA.
+    // edhe nga ana a fmis, edhe nga ana e prindrit
+    // te gjithe kan kopje
     exit(CHILD_ENDS);
 }
 void parentSigHandler(int signal){
