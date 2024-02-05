@@ -20,7 +20,7 @@ static void
 sleep_control_1(struct svc_req *rqstp, register SVCXPRT *transp)
 {
 	union {
-		int set_sleep_duration_1_arg;
+		numbers set_sleep_duration_1_arg;
 	} argument;
 	char *result;
 	xdrproc_t _xdr_argument, _xdr_result;
@@ -32,7 +32,7 @@ sleep_control_1(struct svc_req *rqstp, register SVCXPRT *transp)
 		return;
 
 	case set_sleep_duration:
-		_xdr_argument = (xdrproc_t) xdr_int;
+		_xdr_argument = (xdrproc_t) xdr_numbers;
 		_xdr_result = (xdrproc_t) xdr_int;
 		local = (char *(*)(char *, struct svc_req *)) set_sleep_duration_1_svc;
 		break;

@@ -51,7 +51,6 @@ int total;
 int pos;
 int global_secs;
 
-int *set_sleep_duration(int *seconds, struct, struct svc_req *rqstp);
 void parent_code(msg* parent_message, int N, child* children[]);
 void child_code(msg* child_message, child* self);
 int random_int(int a, int b);
@@ -224,9 +223,6 @@ void child_code(msg* child_message, child* self){
 
 
 // extra functions
-int *set_sleep_duration(int *seconds, struct, struct svc_req *rqstp){
-    global_secs = *seconds;
-}
 int random_int(int a, int b) {
     // Seed the random number generator with the current time
     srand(time(NULL));

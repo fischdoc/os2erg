@@ -8,11 +8,13 @@
 
 
 void
-sleep_control_1(char *host)
+sleep_control_1(char *host, int kids, int secs)
 {
 	CLIENT *clnt;
 	int  *result_1;
-	int  set_sleep_duration_1_arg;
+	numbers  set_sleep_duration_1_arg;
+	set_sleep_duration_1_arg.kids = kids;
+	set_sleep_duration_1_arg.secs = secs;
 
 #ifndef	DEBUG
 	clnt = clnt_create (host, SLEEP_CONTROL, SLEEP_CONTROL_VERSION, "udp");
@@ -32,16 +34,19 @@ sleep_control_1(char *host)
 }
 
 
-int
-main (int argc, char *argv[])
-{
+int main (int argc, char *argv[]) {
 	char *host;
+	int kids;
+	int secs;
 
 	if (argc < 2) {
-		printf ("usage: %s server_host\n", argv[0]);
+		printf ("usage: %s <server_host> <kids> <secs>\n", argv[0]);
 		exit (1);
 	}
 	host = argv[1];
-	sleep_control_1 (host);
+	kids = atoi(argv[2]);
+	secs = atoi(argv[3]);
+
+	sleep_control_1 (host, kids, secs);
 exit (0);
 }

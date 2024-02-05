@@ -12,9 +12,9 @@ SOURCES_SVC.c =
 SOURCES_SVC.h = 
 SOURCES.x = test.x
 
-TARGETS_SVC.c = test_svc.c test_server.c   
-TARGETS_CLNT.c = test_clnt.c test_client.c   
-TARGETS = test.h   test_clnt.c test_svc.c test_client.c test_server.c
+TARGETS_SVC.c = test_svc.c test_server.c test_xdr.c 
+TARGETS_CLNT.c = test_clnt.c test_client.c test_xdr.c 
+TARGETS = test.h test_xdr.c test_clnt.c test_svc.c test_client.c test_server.c
 
 OBJECTS_CLNT = $(SOURCES_CLNT.c:%.c=%.o) $(TARGETS_CLNT.c:%.c=%.o)
 OBJECTS_SVC = $(SOURCES_SVC.c:%.c=%.o) $(TARGETS_SVC.c:%.c=%.o)
